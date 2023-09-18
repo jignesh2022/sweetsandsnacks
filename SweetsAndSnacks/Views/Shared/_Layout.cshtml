@@ -1,0 +1,131 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<ApplicationUser> signInManager;
+@inject RoleManager<IdentityRole> roleManager;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SweetsAndSnacks</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SweetsAndSnacks.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-blue border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">Sweets&Snacks</a>
+                <button class="navbar-toggler " type="button" data-bs-toggle="collapse" 
+                data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    @*<span class="navbar-toggler-icon"></span>*@
+                    <span class="navbar-toggler-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#FFFFFF" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                            <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                        </svg>
+                    </span>                    
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z" />
+                                </svg>
+                            </a>
+                        </li>
+                        
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {                           
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Administration
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Products" asp-action="Index">Products</a></li>
+                                    <li><a class="dropdown-item" asp-area="Administration" asp-controller="Role" asp-action="ListRoles">List Roles</a></li>
+                                    <li><a class="dropdown-item" asp-area="Administration" asp-controller="Role" asp-action="CreateRole">Create Role</a></li>                           
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="mx-auto navbar-nav" 
+                        <li class="nav-item">
+                            @*<a asp-action="Cart" asp-controller="Home">
+                                <span class="navbar-toggler-icon material-symbols-outlined">
+                                    shopping_cart
+                                </span>
+                            </a>*@
+                            <a  asp-area="" asp-action="Cart" asp-controller="Home" class="btn btn-light position-relative me-md-5" style="max-width:fit-content;" >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart3" viewBox="0 0 16 16">
+                                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                                </svg>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    <span id="cartCountSpan" ></span>
+                                    <span class="visually-hidden">cart item count</span>
+                                </span>
+                            </a>
+                        </li>
+                        @if(signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <form method="post" asp-action="logout" asp-controller="home" asp-area="account">
+                                    
+                                    <button type="submit" class="nav-link btn btn-link text-light py-0">                                        
+                                        Logout @User?.Identity?.Name
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link text-light" asp-area="account" asp-controller="home" asp-action="login">Login</a></li>
+                            <li class="nav-item"><a class="nav-link text-light" asp-area="account" asp-controller="home" asp-action="register">Register</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer bg-secondary text-light">
+        <div class="container">
+            &copy; 2023 - SweetsAndSnacks - <a asp-area="" asp-controller="Home" asp-action="Privacy" class=" text-light">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>    
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+   
+    @await RenderSectionAsync("Scripts", required: false)
+   
+        <script>
+            /*****cart count*****/
+            var ccnt = sessionStorage.getItem("cartcount");
+            var cartCountSpan = document.getElementById("cartCountSpan");
+
+            if (ccnt) {
+                    cartCountSpan.innerText = ccnt;
+                }
+                else
+                {
+                    cartCountSpan.innerText = '0';
+                }
+            /************/
+        $(document).on('keypress', ':input:not(textarea):not([type=submit])', function (e) {
+            if (e.which == 13) e.preventDefault();
+        });
+        </script>
+    
+</body>
+</html>

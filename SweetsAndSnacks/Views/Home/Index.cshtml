@@ -1,0 +1,128 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    .grid-container {
+        
+        display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+          /*grid-gap: 5px;*/
+          
+    }
+
+    .grid-item {
+        /*background-color: rgba(255, 255, 255, 0.8);*/
+        /*border: 1px solid rgba(0, 0, 0, 0.8);*/
+        padding: 20px;        
+        margin:auto;
+    }
+</style>
+<div class="row justify-content-center">
+    <div  class="col-md-5">
+        <form asp-action="index" id="searchform"  class="d-flex">
+            <input name="searchstr" id="searchstr" class="form-control me-2" type="search"
+                   placeholder="Search" aria-label="Search" onkeyup="search(this)" onsearch="search(this)" value="@ViewData["searchstr"]">
+            <input id="searchBtn" type="submit" value="Search" style="display:none;"  />
+        </form>
+        <br />
+        @if(Model == null || Model.Count() == 0)
+        {
+            <div class="alert alert-info">
+                No product available to display.
+            </div>
+        }
+    </div>
+</div>
+
+<div class="grid-container">    
+    @foreach (var item in Model)
+    {           
+        
+            <div class="grid-item">
+                <div class="card" style="width:100%; ">                    
+                    <img src="~/images/@item.ImageName" asp-append-version="true" class="card-img-top" alt="" 
+                    style="width:320px; height:250px;" />
+                    <div class="card-body">
+                    <h5 class="card-title">@item.ProductName</h5>
+                        <p class="card-text">
+                            <span class="rupee"></span>@(item.Pricing.ToString("N")) per @item.PricingQuantity @item.QuantityUnit
+                        </p>
+                        <form asp-action="Cart" asp-controller="Home" method="post">
+                            <input type="hidden" id="pid" name="pid" value="@item.ProductId" />
+                            <input type="text" id="qty" name="qty" class="mb-3" value="" required 
+                            onblur="validateQty(this,@item.Stock)"
+                            placeholder="Enter Quantity"> @item.QuantityUnit <br />
+                            <button type="submit" class="btn btn-secondary">
+                                <span class="material-symbols-outlined inline-icon">
+                                    shopping_cart
+                                </span>
+                                Add To Cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+            </div>      
+           
+    }
+</div>
+
+@section Scripts{
+    <script>
+        var timer = 0;
+        var searchBtn = document.getElementById("searchBtn");
+
+
+        const searchinput = document.getElementById("searchstr");
+        const end = searchinput.value.length;
+        searchinput.setSelectionRange(end, end);
+        searchinput.focus();
+
+        function search(){
+            
+            if (timer) {
+                clearTimeout(timer);
+            }
+
+            timer = setTimeout(function () {
+
+                
+                searchBtn.click();
+                
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/Home/Index/Search",
+                //    data: { "searchstr": $("#searchstr").val() },
+                //    contentType: 'application/x-www-form-urlencoded',
+                //    dataType: "json",
+                //    headers:
+                //    {
+                //        "RequestVerificationToken": $('input:hidden[name="__RequestVerificationToken"]').val()
+                //    },
+                //    success: function (msg) {
+                //        console.log(msg);
+                //    }
+                // });
+            }, 750);           
+        }
+
+        function validateQty(ele,stock)
+        {
+            if(isNaN(ele.value) || ele.value <= 0)
+            {
+                alert('Please enter valid Quantity.'); 
+                ele.value = '';                 
+            }
+            if (stock < ele.value) 
+            { 
+                alert('We do not have that much in stock.'); 
+                ele.value = '';                 
+            }
+        }
+
+
+
+    </script>
+}
+
