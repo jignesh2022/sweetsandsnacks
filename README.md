@@ -9,4 +9,4 @@ Simple e-commerce site.
 - Bootstrap
 - jQuery
 
-This is a simple e-commerve website, payment gateway integration not done. Please see 'screenshots' folder for screenshots.
+Payment gateway integration not done. Please see 'screenshots' folder for screenshots.
